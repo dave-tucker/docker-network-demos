@@ -5,12 +5,12 @@ set -e
 #### Set Up Environment
 
 if [ -z $AWS_ACCESS_KEY_ID]; then
-	echo "Please supply your AWS_ACCESS_KEY_ID"
-	exit 1
+    echo "Please supply your AWS_ACCESS_KEY_ID"
+    exit 1
 fi
 if [ -z $AWS_SECRET_ACCESS_KEY]; then
-	echo "Please supply your AWS_ACCESS_KEY_ID"
-	exit 1
+    echo "Please supply your AWS_ACCESS_KEY_ID"
+    exit 1
 fi
 
 group_name="docker-networking"
@@ -43,36 +43,34 @@ aws ec2 authorize-security-group-ingress --group-name ${group_name} --protocol u
 #### Docker Machine Setup
 
 docker-machine -D create \
-	-d amazonec2 \
-	--amazonec2-security-group ${group_name} \
-	swa-consul
+    -d amazonec2 \
+    --amazonec2-security-group ${group_name} \
+    swa-consul
 
 docker $(docker-machine config swa-consul) run -d \
-	-p "8500:8500" \
-	-h "consul" \
-	progrium/consul -server -bootstrap
-	
-docker-machine create \
-	-d amazonec2 \
-	--amazonec2-security-group ${group_name} \
-	--swarm \
-	--swarm-image dockerswarm/swarm:latest \
-	--swarm-master \
-	--swarm-discovery consul://$(docker-machine ip swa-consul):8500 \
-        --engine-install-url=https://test.docker.com \
-   	--engine-opt="cluster-store=consul://$(docker-machine ip consul):8500" \
-    	--engine-opt="com.docker.network.driver.overlay.bind_interface=eth1" \
-	swa-master
+    -p "8500:8500" \
+    -h "consul" \
+    progrium/consul -server -bootstrap
 
 docker-machine create \
-	-d amazonec2 \
-	--amazonec2-security-group ${group_name} \
-	--swarm \
-	--swarm-image dockerswarm/swarm:latest \
-	--swarm-discovery consul://$(docker-machine ip swa-consul):8500 \
+    -d amazonec2 \
+    --amazonec2-security-group ${group_name} \
+    --swarm \
+    --swarm-image "swarm:1.0.0-rc2" \
+    --swarm-master \
+    --swarm-discovery consul://$(docker-machine ip swa-consul):8500 \
         --engine-install-url=https://test.docker.com \
-   	--engine-opt="cluster-store=consul://$(docker-machine ip consul):8500" \
-    	--engine-opt="com.docker.network.driver.overlay.bind_interface=eth1" \
-	--engine-opt="com.docker.network.driver.overlay.bind_interface=eth1" \
-	--engine-label="com.docker.network.driver.overlay.neighbor_ip=$(docker-machine ip swa-master)" \
-	swa-slave1
+    --engine-opt="cluster-store=consul://$(docker-machine ip consul):8500" \
+    --engine-opt="cluster-advertise=eth0:0" \
+    swa-master
+
+docker-machine create \
+    -d amazonec2 \
+    --amazonec2-security-group ${group_name} \
+    --swarm \
+    --swarm-image "swarm:1.0.0-rc2" \
+    --swarm-discovery consul://$(docker-machine ip swa-consul):8500 \
+        --engine-install-url=https://test.docker.com \
+    --engine-opt="cluster-store=consul://$(docker-machine ip consul):8500" \
+    --engine-opt="cluster-advertise=eth0:0" \
+    swa-slave1
