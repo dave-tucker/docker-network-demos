@@ -1,5 +1,6 @@
 tell application iTerm
-    tell current session of first window
+    activate
+    tell current session of current terminal
         write text "echo \"First, set up your environment\" | figlet | lolcat"
         delay 5
         write text "echo \"The instructions are in the blog post\" | figlet | lolcat"
@@ -37,8 +38,6 @@ tell application iTerm
         write text "docker run -it --rm --net=myapp --env=\"constraint:node==swl-demo1\" busybox wget -O- http://web"
         delay 5
         write text "echo \"That's how easy it is for container to talk across hosts\" | figlet | lolcat
-        delay 5
-        write text "
         delay 5
     end tell
 end tell
