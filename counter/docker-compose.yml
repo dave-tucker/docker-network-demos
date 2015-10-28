@@ -2,6 +2,7 @@ web:
   image: bfirsh/compose-mongodb-demo
   environment:
     - "MONGO_HOST=counter_mongo_1"
+    - "constraint:node==swl-demo0"
   ports:
     - "80:5000"
 
