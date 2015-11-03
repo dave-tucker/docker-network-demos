@@ -43,7 +43,6 @@ aws ec2 authorize-security-group-ingress --group-name ${group_name} --protocol u
 
 docker-machine create \
     -d amazonec2 \
-    --engine-install-url=https://test.docker.com \
     --amazonec2-security-group ${group_name} \
     mha-consul
 
@@ -55,7 +54,6 @@ docker $(docker-machine config mha-consul) run -d \
 docker-machine create \
     -d amazonec2 \
     --amazonec2-security-group ${group_name} \
-    --engine-install-url=https://test.docker.com \
     --engine-opt="cluster-store=consul://$(docker-machine ip mha-consul):8500" \
     --engine-opt="cluster-advertise=eth0:0" \
     mha-demo0
@@ -63,7 +61,6 @@ docker-machine create \
 docker-machine create \
     -d amazonec2 \
     --amazonec2-security-group ${group_name} \
-    --engine-install-url=https://test.docker.com \
     --engine-opt="cluster-store=consul://$(docker-machine ip mha-consul):8500" \
     --engine-opt="cluster-advertise=eth0:0" \
     mha-demo1

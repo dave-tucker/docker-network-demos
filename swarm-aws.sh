@@ -56,10 +56,8 @@ docker-machine create \
     -d amazonec2 \
     --amazonec2-security-group ${group_name} \
     --swarm \
-    --swarm-image "swarm:1.0.0-rc2" \
     --swarm-master \
     --swarm-discovery consul://$(docker-machine ip swa-consul):8500 \
-        --engine-install-url=https://test.docker.com \
     --engine-opt="cluster-store=consul://$(docker-machine ip consul):8500" \
     --engine-opt="cluster-advertise=eth0:0" \
     swa-master
@@ -68,9 +66,7 @@ docker-machine create \
     -d amazonec2 \
     --amazonec2-security-group ${group_name} \
     --swarm \
-    --swarm-image "swarm:1.0.0-rc2" \
     --swarm-discovery consul://$(docker-machine ip swa-consul):8500 \
-        --engine-install-url=https://test.docker.com \
     --engine-opt="cluster-store=consul://$(docker-machine ip consul):8500" \
     --engine-opt="cluster-advertise=eth0:0" \
     swa-slave1
